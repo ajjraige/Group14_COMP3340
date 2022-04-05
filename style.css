@@ -1,0 +1,147 @@
+html, body {
+    background-color: aliceblue;
+    padding: 0%;
+    margin: 0%;
+}
+
+h1 {
+    margin-left: 1%;
+}
+
+h2 {
+    margin-top: 1%;
+    margin-bottom: 1%;
+}
+
+strong {
+    font-weight: normal;
+    color: red;
+}
+
+label {
+    display: inline-block;
+}
+
+input {
+    display: block;
+}
+
+textarea {
+    display: block;
+}
+
+#authbox {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    border: 1px solid gray;
+    box-shadow: 5px 5px rgba(0, 0, 0, 0.1);
+    padding: 1%;
+    width: max-content;
+}
+
+#container {
+    width: 50%;
+    height: 100%;
+    position: absolute;
+    left: 25%;
+    background-color: white;
+    border: 1px solid gray;
+}
+
+#header {
+    width: 98%;
+    height: max-content;
+    background-color: gray;
+    color: white;
+    padding: 1%;
+    font: 24px Verdana;
+    display: flex;
+}
+
+.cell {
+    text-align: center;
+    flex: 1;
+}
+
+.cell a {
+    color: white;
+}
+
+.cell a:hover {
+    color: lightgray;
+}
+
+#userbar {
+    width: max-content;
+    height: max-content;
+    float: right;
+    background-color: white;
+    border-left: 1px solid gray;
+    border-bottom: 1px solid gray;
+    padding: 1%;
+}
+
+#store {
+    padding: 1%;
+    display: flex;
+    height: 80%;
+}
+
+#sidebar {
+    width: 23%;
+    height: 98%;
+    float: left;
+    padding: 1%;
+    border: 1px solid gray;
+}
+
+#items {
+    width: 73%;
+    height: 98%;
+    float: right;
+    padding: 1%;
+    border: 1px solid gray;
+    border-left: 0px solid gray;
+}
+
+#itemslist {
+    width: 100%;
+}
+
+#itemslist tr:nth-child(even) {
+    background-color: rgb(235, 235, 235);
+}
+
+#itemslist .item:hover {
+    background-color: lightgray;
+}
+
+#nextpage {
+    text-align: center;
+}
+
+#itemdisplay {
+    width: 96%;
+    margin: 1%;
+    padding: 1%;
+    background-color: lightgray;
+    display: flex;
+}
+
+#itemdisplay img {
+    width: 100%;
+    height: max-content;
+}
+
+#left {
+    float: left;
+    width: 60%;
+}
+
+#right {
+    float: right;
+    width: 40%;
+}
