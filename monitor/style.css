@@ -1,0 +1,35 @@
+html, body {
+    width: 98%;
+    height: 98%;
+    font-family: Verdana;
+    font-size: 16px;
+    background-color: darkslategray;
+}
+
+div {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: max-content;
+    border-radius: 5px;
+    border: 1px solid black;
+    box-shadow: 5px 5px rgba(0, 0, 0, 0.3);
+    background-color: white;
+    padding: 1%;
+}
+
+h2 {
+    margin-top: 0;
+}
+
+.red {
+    font-weight: bold;
+    color: red;
+}
+
+.green {
+    font-weight: bold;
+    color: green;
+}
+

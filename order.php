@@ -3,7 +3,6 @@
 require_once "user_class.php";
 require_once "order_class.php";
 
-$status = "";
 $user;
 $page = 1;
 $order;
@@ -13,26 +12,24 @@ $user = new User();
 $result = $user->get_session();
 
 if ($result == UserRtn::Success) {
-    $status = "Success!";
-
     if (isset($_GET["logout"])) {
         header("Location: logout.php");
         exit;
     }
 } else {
-    $status = "Not success, code: " . $result;
     header("Location: home.php");
     exit;
 }
 
+// We use a GET request to determine which order id the user wants to see.
 if (isset($_GET["orderid"])) {
     $id = htmlspecialchars($_GET["orderid"]);
     $page = isset($_GET["page"]) ? htmlspecialchars($_GET["page"]) : 1;
     
-    // Populate the orders list with orders from database.
+    // Try to find the given order id associated with the currently logged in user.
     $order = Order::get_order_by_id($id, $user, $page);
     
-    if ($order == ItemRtn::InvalidParam) {
+    if (gettype($order) != "object") {
         header("Location: account.php");
         exit;
     }
@@ -46,6 +43,8 @@ if (isset($_GET["orderid"])) {
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="The website aims to provide best online buying experience of numerous plants and gardening tools. You can find the perfect plant or flower for your home!">
+	<meta name="keywords" content="plants, flowering plants, indoor plants, vegetables, gardening tools, fertilizer, pesticide">
     <title>My Account</title>
     <link rel="stylesheet" href="storestyle.css">
 </head>
@@ -53,7 +52,7 @@ if (isset($_GET["orderid"])) {
     <div class="container">
 		<div class="navbar">
 			<div class="logo">
-				<img src="https://jahad.myweb.cs.uwindsor.ca/Logo.png" width="125px">
+				<img src="https://jahad.myweb.cs.uwindsor.ca/Logo.png" width="125" alt = "logo">
 			</div>
 			<nav>
 				<ul>
@@ -61,11 +60,14 @@ if (isset($_GET["orderid"])) {
 					<li><a href="products.php">Products</a></li>
 					<li><a href="cart.php">Shopping Cart</a></li>
 					<li><a href="account.php">Account</a></li>
-					<li><a href="About.html">About</a></li>
-					<li><a href="contact.html">Contact</a></li>
-                    <br><br>
+					<li><a href="about.php">About</a></li>
+					<li><a href="contact.php">Contact</a></li>
+                </ul>
+                <br><br>
+			    <ul>
 					<?php
 
+                    // Choose which submenu to show based on if a user is logged in (or an admin).
                     if ($user != null) {
                         echo "<li>Hi, " . $user->username . "!</li>";
 
@@ -94,11 +96,12 @@ if (isset($_GET["orderid"])) {
             <div id = "content">
                 <?php
 
+                // Output order information at the top.
                 $date = new DateTime();
                 $date->setTimestamp($order->timestamp);
                 $fmt = $date->format("F j, Y, g:i a");
                     
-                echo "<b>Order #" . $order->orderid . " ($" . $order->cost . ") at " . $fmt . "</b>";
+                echo "<b>Order #" . $order->orderid . " ($" . $order->cost . ") at " . $fmt . "</b> (" . $order->status . ")";
 
                 ?>
 
@@ -113,18 +116,15 @@ if (isset($_GET["orderid"])) {
 
                     <?php
 
-                    if ($order < 0) {
-                        echo "Could not retrive items, error code: " . $order;
-                    } else {
-                        foreach($order->items as $item) {
-                            echo "<tr class = \"product\" onclick = \"window.location.href='product.php?item=" . $item->itemid . "'\">";
-                            echo "<td>" . $item->name . "</td>";
-                            echo "<td>" . $item->description. "</td>";
-                            echo "<td>" . $item->manufacturer . "</td>";
-                            echo "<td>$" . $item->price . "</td>";
-                            echo "<td>" . $item->quantity . "</td>";
-                            echo "</tr>";
-                        }
+                    // Populate the items table with items from the order.
+                    foreach($order->items as $item) {
+                        echo "<tr class = \"product\" onclick = \"window.location.href='product.php?item=" . $item->itemid . "'\">";
+                        echo "<td>" . $item->name . "</td>";
+                        echo "<td>" . $item->description. "</td>";
+                        echo "<td>" . $item->manufacturer . "</td>";
+                        echo "<td>$" . $item->price . "</td>";
+                        echo "<td>" . $item->quantity . "</td>";
+                        echo "</tr>";
                     }
 
                     ?>
@@ -169,14 +169,14 @@ if (isset($_GET["orderid"])) {
                 <div class="footer-col-1">
                     <h3>Useful Links</h3>
                     <ul>
+                        <li><a href = "help.php" style = "color: white;">Help</a></li>
                         <li>Coupons</li>
-                        <li>Contact Support</li>
                         <li>Return Policy</li>
                         <li>Account</li>
                     </ul>
                 </div>
                 <div class="footer-col-2">
-                    <img src="https://jahad.myweb.cs.uwindsor.ca/Logo.png">
+                    <img src="https://jahad.myweb.cs.uwindsor.ca/Logo.png" alt = "logo">
                 </div>
                 <div class="footer-col-3">
                     <h3>Social Media</h3>

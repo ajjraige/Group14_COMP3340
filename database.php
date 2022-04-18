@@ -7,6 +7,9 @@ class DBConnection {
         // Make sure errors are reported.
         mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
+        // The mysqli_report function now means any error (even non-fatal ones)
+        // from the database will throw an exception, so we must wrap our
+        // creation of a new database connection in a try-catch statement.
         try {
             $this->mysqli = new mysqli("localhost", "killen2_3340finalproj", "P0pl@rTr33!!!", "killen2_3340finalproj");
             $this->active = true;
@@ -17,6 +20,8 @@ class DBConnection {
     }
     
     public function is_valid() {
+        // Since mysqli is private, for other files to know if the connection
+        // succeeded or not, this function must be used to check.
         if ($this->mysqli == null) {
             return false;
         }
@@ -25,6 +30,8 @@ class DBConnection {
     }
 
     public function escape($str) {
+        // Similarly, an escape function is needed, as the mysqli variable cannot
+        // be used to call real_escape_string directly.
         if ($this->mysqli == null) {
             return false;
         }
@@ -39,16 +46,18 @@ class DBConnection {
 
         $result = false;
 
+        // Catch any errors and simply return false if they happen.
         try {
             $result = $this->mysqli->query($query);
         } catch (mysqli_sql_exception $e) {
-            $result = $e->getMessage();
+            $result = false;
         }
 
         return $result;
     }
 
     public function ping() {
+        // Ping function to get around the private mysqli variable.
         if (!$this->is_valid()) {
             return false;
         }
@@ -57,6 +66,7 @@ class DBConnection {
     }
 
     public function close() {
+        // Close function to get around the private mysqli variable.
         if (!$this->is_valid()) {
             return false;
         }

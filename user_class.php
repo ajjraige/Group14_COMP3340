@@ -2,6 +2,7 @@
 
 require_once "database.php";
 
+// This class simply holds constant values for readable error codes in User functions.
 class UserRtn {
     const Success = 0;
     const DBDisconnect = -1;
@@ -14,6 +15,7 @@ class UserRtn {
     const NoLogin = -8;
     const IncorrectEmail = -9;
     const BannedUser = -10;
+    const InvalidParam = -11;
 }
 
 class User {
@@ -28,6 +30,11 @@ class User {
     public $banned;
     private $valid;
     
+    // Construct the user with sane default values. Since users are essentially
+    // instantiated with get_session, login or register, which by their nature
+    // should be able to fail, we can't really do much with the constructor.
+    // Stuffing the code with a large amount of try-catch statments to deal
+    // with exceptions and creating custom exception classes was too tedious.
     public function __construct() {
         $this->userid = 0;
         $this->username = "";
@@ -41,6 +48,42 @@ class User {
         $this->valid = false;
     }
 
+    public static function get_user_by_id($id) {
+        $db = new DBConnection();
+
+        if (!$db->is_valid()) {
+            return UserRtn::DBDisconnect;
+        }
+
+        // Get user from the database based on its id.
+        $result = $db->query("SELECT * FROM USERS WHERE id=" . $db->escape($id));
+
+        if (!$result) {
+            $db->close();
+            return UserRtn::FailedQuery;
+        } else if ($result->num_rows != 1) {
+            $db->close();
+            return UserRtn::InvalidParam;
+        }
+
+        // If the query succeeded, make a new user, populate it with all its information,
+        // and return it.
+        $row = $result->fetch_row();
+
+        $user = new User();
+        $user->userid = $row[0];
+        $user->username = $row[1];
+        $user->fname = $row[3];
+        $user->lname = $row[4];
+        $user->address = $row[5];
+        $user->zip = $row[6];
+        $user->email = $row[7];
+        $user->admin = $row[8];
+        $user->banned = $row[9];
+
+        return $user;
+    }
+
     public static function get_users($page) {
         $db = new DBConnection();
 
@@ -48,6 +91,7 @@ class User {
             return UserRtn::DBDisconnect;
         }
 
+        // Select all users so they can be narrowed down by page.
         $result = $db->query("SELECT * FROM USERS");
 
         if (!$result) {
@@ -55,7 +99,8 @@ class User {
             return UserRtn::FailedQuery;
         }
 
-        if ($page > 1 + $result->num_rows / 10 || $page < 0) {
+        // Make sure the page is valid.
+        if ($page >= 1 + $result->num_rows / 10 || $page < 0) {
             $db->close();
             return UserRtn::InvalidParam;
         }
@@ -73,6 +118,7 @@ class User {
             $end = $start + 10;
         }
 
+        // Populate the users list with the users on that page.
         for ($i = $start; $i < count($data) && $i < $end; $i++) {
             $user = new User();
             $user->userid = $data[$i]["id"];
@@ -192,6 +238,9 @@ class User {
     }
 
     public function login($username, $password) {
+        // Destroy any previous existing sessions.
+        session_destroy();
+        
         // Make a new database connection.
         $db = new DBConnection();
 
@@ -404,11 +453,20 @@ class User {
 
         $query = "UPDATE USERS SET ";
 
+        // Since we don't know exactly which columns must be changed, and the
+        // list already uses the corresponding column names as keys, we can
+        // build the query up ourselves using the key for column name, then put
+        // an equals and then the value. These assignments must be comma separated,
+        // so there is logic to make sure there isn't a trailing comma at the end.
         foreach ($list as $key => $entry) {
-            $query .= $key . "='" . $entry . "' ";
+            $query .= $key . "='" . $entry . "'";
+
+            if ($key !== array_key_last($list)) {
+                $query .= ", ";
+            }
         }
 
-        $query .= "WHERE id=" . $this->userid;
+        $query .= " WHERE id=" . $this->userid;
 
         $result = $db->query($query);
 
@@ -439,6 +497,46 @@ class User {
         }
 
         $db->close();
+        return UserRtn::Success;
+    }
+
+    public function toggle_admin() {
+        $db = new DBConnection();
+
+        if (!$db->is_valid()) {
+            return UserRtn::DBDisconnect;
+        }
+
+        $newval = $this->admin ? 0 : 1;
+
+        $result = $db->query("UPDATE USERS SET admin=" . $newval . " WHERE id=" . $this->userid);
+
+        if (!$result) {
+            return UserRtn::FailedQuery;
+        }
+
+        $this->admin = !$this->admin;
+
+        return UserRtn::Success;
+    }
+
+    public function toggle_ban() {
+        $db = new DBConnection();
+
+        if (!$db->is_valid()) {
+            return UserRtn::DBDisconnect;
+        }
+
+        $newval = $this->banned ? 0 : 1;
+
+        $result = $db->query("UPDATE USERS SET banned=" . $newval . " WHERE id=" . $this->userid);
+
+        if (!$result) {
+            return UserRtn::FailedQuery;
+        }
+
+        $this->banned = !$this->banned;
+
         return UserRtn::Success;
     }
 }

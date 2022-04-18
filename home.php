@@ -18,6 +18,8 @@ if ($result != UserRtn::Success) {
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="The website aims to provide best online buying experience of numerous plants and gardening tools. You can find the perfect plant or flower for your home!">
+	<meta name="keywords" content="plants, flowering plants, indoor plants, vegetables, gardening tools, fertilizer, pesticide">
 	<title>Home</title>
 	<link rel="stylesheet" href="storestyle.css">
 </head>
@@ -25,7 +27,7 @@ if ($result != UserRtn::Success) {
 	<div class="container">
 		<div class="navbar">
 			<div class="logo">
-				<img src="https://jahad.myweb.cs.uwindsor.ca/Logo.png" width="125px">
+				<img src="https://jahad.myweb.cs.uwindsor.ca/Logo.png" width="125" alt = "logo">
 			</div>
 			<nav>
 				<ul>
@@ -33,11 +35,14 @@ if ($result != UserRtn::Success) {
 					<li><a href="products.php">Products</a></li>
 					<li><a href="cart.php">Shopping Cart</a></li>
 					<li><a href="account.php">Account</a></li>
-					<li><a href="About.html">About</a></li>
-					<li><a href="contact.html">Contact</a></li>
-					<br><br>
+					<li><a href="about.php">About</a></li>
+					<li><a href="contact.php">Contact</a></li>
+                </ul>
+                <br><br>
+                <ul>
                     <?php
 
+                    // Choose which submenu to show based on if a user is logged in (or an admin).
                     if ($user != null) {
                         echo "<li>Hi, " . $user->username . "!</li>";
 
@@ -71,14 +76,14 @@ if ($result != UserRtn::Success) {
                 <div class="footer-col-1">
                     <h3>Useful Links</h3>
                     <ul>
+                        <li><a href = "help.php" style = "color: white;">Help</a></li>
                         <li>Coupons</li>
-                        <li>Contact Support</li>
                         <li>Return Policy</li>
                         <li>Account</li>
                     </ul>
                 </div>
                 <div class="footer-col-2">
-                    <img src="https://jahad.myweb.cs.uwindsor.ca/Logo.png">
+                    <img src="https://jahad.myweb.cs.uwindsor.ca/Logo.png" alt = "logo">
                 </div>
                 <div class="footer-col-3">
                     <h3>Social Media</h3>
